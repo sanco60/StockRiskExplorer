@@ -1,0 +1,29 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "StockRiskExplorer", "StockRiskExplorer\StockRiskExplorer.vcxproj", "{E347C57B-D050-4336-8188-79D3A31A7FB8}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A38C80AF-9D63-452E-8420-E82A3511F9DD} = {A38C80AF-9D63-452E-8420-E82A3511F9DD}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IEAdapterMFC", "IEAdapterMFC\IEAdapterMFC.vcxproj", "{A38C80AF-9D63-452E-8420-E82A3511F9DD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E347C57B-D050-4336-8188-79D3A31A7FB8}.Debug|Win32.ActiveCfg = Debug|Win32
+		{E347C57B-D050-4336-8188-79D3A31A7FB8}.Debug|Win32.Build.0 = Debug|Win32
+		{E347C57B-D050-4336-8188-79D3A31A7FB8}.Release|Win32.ActiveCfg = Release|Win32
+		{E347C57B-D050-4336-8188-79D3A31A7FB8}.Release|Win32.Build.0 = Release|Win32
+		{A38C80AF-9D63-452E-8420-E82A3511F9DD}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A38C80AF-9D63-452E-8420-E82A3511F9DD}.Debug|Win32.Build.0 = Debug|Win32
+		{A38C80AF-9D63-452E-8420-E82A3511F9DD}.Release|Win32.ActiveCfg = Release|Win32
+		{A38C80AF-9D63-452E-8420-E82A3511F9DD}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
