@@ -32,6 +32,7 @@ protected:
 private:
 
 	CStoryDirector m_StoryDirector;
+
 public:
 	afx_msg void OnBnClickedButtonGowebsite();
 	afx_msg void OnBnClickedButtonResult();

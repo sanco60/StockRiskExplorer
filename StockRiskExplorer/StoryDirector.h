@@ -28,6 +28,7 @@ private:
 	bool m_bInitialized;
 
 	CComQIPtr<IWebBrowser2> m_pWebBrowser2;
+
 };
 
 
