@@ -92,6 +92,7 @@ CIEAdapterMFC::CIEAdapterMFC()
 
 CIEAdapterMFC::~CIEAdapterMFC()
 {
+	m_pWebBrowser2 = (LPUNKNOWN)NULL;
 }
 
 
@@ -151,7 +152,7 @@ void CIEAdapterMFC::refresh()
 }
 
 
-bool CIEAdapterMFC::searchItems(std::string szTag, std::vector<std::string> attrs, std::vector<CComQIPtr<IHTMLElement>> &elemVec)
+bool CIEAdapterMFC::queryItems(std::string szTag, std::vector<std::string> &attrs, std::vector<CComQIPtr<IHTMLElement>> &elemVec)
 {
 	if (!m_pWebBrowser2)
 	{
@@ -189,7 +190,7 @@ bool CIEAdapterMFC::searchItems(std::string szTag, std::vector<std::string> attr
 		CComQIPtr<IHTMLElement> eTagLine(pItemDisp);
 		if (!eTagLine)
 			continue;
-		
+
 		//是否所有属性都存在
 		bool bAllExist = true;
 		std::vector<std::string>::iterator aItor = attrs.begin();
@@ -200,7 +201,17 @@ bool CIEAdapterMFC::searchItems(std::string szTag, std::vector<std::string> attr
 			CComVariant tmpVar;
 			eTagLine->getAttribute(bstrArrt, 0, &tmpVar);
 
+			//调试
+			CComBSTR outHtml;
+			eTagLine->get_outerHTML(&outHtml);
+
 			if (0 == tmpVar.bstrVal)
+			{
+				bAllExist = false;
+				break;
+			}
+			CComBSTR bstrVal(tmpVar.bstrVal);
+			if (0 == bstrVal.Length())
 			{
 				bAllExist = false;
 				break;
@@ -216,3 +227,35 @@ bool CIEAdapterMFC::searchItems(std::string szTag, std::vector<std::string> attr
 	return true;
 }
 
+
+void CIEAdapterMFC::close()
+{
+	if (!m_pWebBrowser2)
+		return;
+
+	m_pWebBrowser2->Quit();
+	m_pWebBrowser2 = (LPUNKNOWN)NULL;
+	m_dwCookie = 0;
+}
+
+
+void CIEAdapterMFC::waitCompleted()
+{
+	if (!m_pWebBrowser2)
+		return;
+
+	while(true)
+	{
+		READYSTATE lReadyState = READYSTATE_UNINITIALIZED;
+
+		::Sleep(1000);
+		m_pWebBrowser2->get_ReadyState(&lReadyState);
+
+		if (READYSTATE_COMPLETE == lReadyState)
+		{
+			break;
+		}
+	}
+
+	return;
+}

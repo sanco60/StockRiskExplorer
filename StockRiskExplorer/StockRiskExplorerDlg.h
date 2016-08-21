@@ -3,6 +3,7 @@
 //
 
 #include "StoryDirector.h"
+#include "afxwin.h"
 
 
 // CStockRiskExplorerDlg 对话框
@@ -15,7 +16,9 @@ public:
 // 对话框数据
 	enum { IDD = IDD_STOCKRISKEXPLORER_DIALOG };
 
-	protected:
+	void showMsg(LPCTSTR lpszNewText);
+
+protected:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV 支持
 
 
@@ -36,4 +39,9 @@ private:
 public:
 	afx_msg void OnBnClickedButtonGowebsite();
 	afx_msg void OnBnClickedButtonResult();
+	CButton m_ShanghaiRadio;
+	CButton m_ShenzhenRadio;
+	CEdit m_outmsgEdit;
 };
+
+

@@ -9,7 +9,14 @@
 #endif
 
 #include "resource.h"		// 主符号
+#include "StockRiskExplorerDlg.h"
 
+
+#define MSG_OUTPUT(X)  if (NULL != theApp.m_pMainWnd) \
+	                   {                              \
+					       CStockRiskExplorerDlg* pDlg = (CStockRiskExplorerDlg*)theApp.m_pMainWnd;   \
+						   pDlg->showMsg(X);          \
+					   }
 
 // CStockRiskExplorerApp:
 // 有关此类的实现，请参阅 StockRiskExplorer.cpp
@@ -27,9 +34,6 @@ public:
 // 实现
 
 	DECLARE_MESSAGE_MAP()
-
-private:
-
 
 };
 

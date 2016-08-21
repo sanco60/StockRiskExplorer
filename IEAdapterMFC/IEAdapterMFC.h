@@ -11,6 +11,7 @@
 #include <vector>
 #include <MsHTML.h>
 #include <string>
+#include <map>
 
 #ifdef IEADAPTERMFC_EXPORTS
 #define IEADAPTERMFC_PUBLIC __declspec(dllexport)
@@ -46,7 +47,7 @@ public:
 
 	CIEAdapterMFC();
 
-	~CIEAdapterMFC();
+	virtual ~CIEAdapterMFC();
 
 	bool navigate(std::string szUrl);
 
@@ -56,7 +57,11 @@ public:
 
 	void refresh();
 
-	bool searchItems(std::string szTag, std::vector<std::string> attrs, std::vector<CComQIPtr<IHTMLElement>> &elemVec);
+	bool queryItems(std::string szTag, std::vector<std::string> &attrs, std::vector<CComQIPtr<IHTMLElement>> &elemVec);
+
+	void close();
+
+	void waitCompleted();
 
 private:
 	

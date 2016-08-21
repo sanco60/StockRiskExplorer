@@ -7,6 +7,8 @@
 #include "StockRiskExplorerDlg.h"
 #include "afxdialogex.h"
 
+#include <string>
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -23,9 +25,20 @@ CStockRiskExplorerDlg::CStockRiskExplorerDlg(CWnd* pParent /*=NULL*/)
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
 
+
+void CStockRiskExplorerDlg::showMsg(LPCTSTR lpszNewText)
+{
+	m_outmsgEdit.SetSel(-1);
+	m_outmsgEdit.ReplaceSel(lpszNewText);
+}
+
+
 void CStockRiskExplorerDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
+	DDX_Control(pDX, IDC_RADIO_SH, m_ShanghaiRadio);
+	DDX_Control(pDX, IDC_RADIO_SZ, m_ShenzhenRadio);
+	DDX_Control(pDX, IDC_EDIT_MSG, m_outmsgEdit);
 }
 
 
@@ -51,6 +64,8 @@ BOOL CStockRiskExplorerDlg::OnInitDialog()
 	// TODO: 在此添加额外的初始化代码
 	if (!m_StoryDirector.init())
 		return FALSE;
+
+	m_ShanghaiRadio.SetCheck(TRUE);
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -97,10 +112,37 @@ HCURSOR CStockRiskExplorerDlg::OnQueryDragIcon()
 void CStockRiskExplorerDlg::OnBnClickedButtonGowebsite()
 {
 	// TODO: 在此添加控件通知处理程序代码
+	if (!m_StoryDirector.m_IEAdapterMFC)
+		return;
+
+	std::string szGotoUrl;
+	int iSHChecked = m_ShanghaiRadio.GetCheck();
+	if (1 == iSHChecked)
+	{
+		szGotoUrl = "http://www.sse.com.cn/disclosure/listedinfo/announcement/";		
+	} else
+	{
+		szGotoUrl = "http://disclosure.szse.cn/m/drgg.htm";
+	}
+	m_StoryDirector.m_IEAdapterMFC->navigate(szGotoUrl);
+	m_StoryDirector.m_IEAdapterMFC->waitCompleted();
 }
 
 
 void CStockRiskExplorerDlg::OnBnClickedButtonResult()
 {
 	// TODO: 在此添加控件通知处理程序代码
+	if (!m_StoryDirector.m_IEAdapterMFC)
+		return;
+
+	int iSHChecked = m_ShanghaiRadio.GetCheck();
+
+	if (1 == iSHChecked)
+	{
+		m_StoryDirector.processShangHai();
+	} else
+	{
+		m_StoryDirector.processShenZhen();
+	}	
 }
+

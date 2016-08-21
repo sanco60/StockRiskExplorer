@@ -4,7 +4,6 @@
 
 #include "stdafx.h"
 #include "StockRiskExplorer.h"
-#include "StockRiskExplorerDlg.h"
 
 
 #ifdef _DEBUG

@@ -1,6 +1,9 @@
 #pragma once
 
 
+#include "boost\shared_ptr.hpp"
+#include "IEAdapterMFC.h"
+
 // CStoryDirector
 
 class CStoryDirector : public CWnd
@@ -16,9 +19,17 @@ public:
 
 	bool uninit();
 
-	bool getTopIE();
+	CComQIPtr<IWebBrowser2> getTopIE();
 
 	CString	GetWindowClassName(IWebBrowser2* pwb);
+
+	void processShangHai();
+
+	void processShenZhen();
+
+	void processPdfUrl(CComBSTR &url);
+
+	void getFileName(CComBSTR &url, CComBSTR &fname);
 
 protected:
 	DECLARE_MESSAGE_MAP()
@@ -27,7 +38,11 @@ private:
 
 	bool m_bInitialized;
 
-	CComQIPtr<IWebBrowser2> m_pWebBrowser2;
+	//UINT m_pageNum;
+
+public:
+
+	boost::shared_ptr<CIEAdapterMFC> m_IEAdapterMFC;
 
 };
 
