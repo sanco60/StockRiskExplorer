@@ -39,6 +39,7 @@ void CStockRiskExplorerDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_RADIO_SH, m_ShanghaiRadio);
 	DDX_Control(pDX, IDC_RADIO_SZ, m_ShenzhenRadio);
 	DDX_Control(pDX, IDC_EDIT_MSG, m_outmsgEdit);
+	DDX_Control(pDX, IDC_LIST_KEYWORD, m_ListKeyword);
 }
 
 
@@ -47,6 +48,9 @@ BEGIN_MESSAGE_MAP(CStockRiskExplorerDlg, CDialogEx)
 	ON_WM_QUERYDRAGICON()
 	ON_BN_CLICKED(IDC_BUTTON_GOWEBSITE, &CStockRiskExplorerDlg::OnBnClickedButtonGowebsite)
 	ON_BN_CLICKED(IDC_BUTTON_RESULT, &CStockRiskExplorerDlg::OnBnClickedButtonResult)
+	ON_BN_CLICKED(IDC_BUTTON_ANALYSE, &CStockRiskExplorerDlg::OnBnClickedButtonAnalyse)
+	ON_BN_CLICKED(IDC_BUTTON_CLEANTEMP, &CStockRiskExplorerDlg::OnBnClickedButtonCleantemp)
+	ON_BN_CLICKED(IDC_BUTTON_CLEANWORK, &CStockRiskExplorerDlg::OnBnClickedButtonCleanwork)
 END_MESSAGE_MAP()
 
 
@@ -144,5 +148,38 @@ void CStockRiskExplorerDlg::OnBnClickedButtonResult()
 	{
 		m_StoryDirector.processShenZhen();
 	}	
+}
+
+
+
+void CStockRiskExplorerDlg::OnBnClickedButtonAnalyse()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	int iCurSel = 0;
+	CString csSel;
+
+	iCurSel = m_ListKeyword.GetCurSel();
+	if (0 > iCurSel)
+	{
+		this->showMsg(_T("没有选择文件\r\n"));
+		return;
+	}
+
+	m_ListKeyword.GetText(iCurSel, csSel);
+	m_StoryDirector.analysing(csSel);
+}
+
+
+void CStockRiskExplorerDlg::OnBnClickedButtonCleantemp()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	m_StoryDirector.cleanTempDir();
+}
+
+
+void CStockRiskExplorerDlg::OnBnClickedButtonCleanwork()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	m_StoryDirector.cleanWorkDir();
 }
 

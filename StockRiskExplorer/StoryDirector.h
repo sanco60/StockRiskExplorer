@@ -31,14 +31,20 @@ public:
 
 	void getFileName(CComBSTR &url, CComBSTR &fname);
 
+	void cleanTempDir();
+
+	void cleanWorkDir();
+
+	void analysing(CString & fNameKeyword);
+
+	void analyseSingle(LPCTSTR fName, std::vector<CString>& kwVec);
+
 protected:
 	DECLARE_MESSAGE_MAP()
 
 private:
 
 	bool m_bInitialized;
-
-	//UINT m_pageNum;
 
 public:
 

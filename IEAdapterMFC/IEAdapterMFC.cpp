@@ -154,25 +154,83 @@ void CIEAdapterMFC::refresh()
 
 bool CIEAdapterMFC::queryItems(std::string szTag, std::vector<std::string> &attrs, std::vector<CComQIPtr<IHTMLElement>> &elemVec)
 {
-	if (!m_pWebBrowser2)
-	{
+	if (!m_pWebBrowser2)	
 		return false;
-	}
-
+	
 	CComPtr<IDispatch> pDocDisp;
 	m_pWebBrowser2->get_Document(&pDocDisp);
 	CComQIPtr<IHTMLDocument2> pHTMLDoc(pDocDisp);
 
 	CComQIPtr<IHTMLElementCollection> ecAll;
-	if (!pHTMLDoc)
-	{
+	if (!pHTMLDoc)	
 		return false;
-	}
+	
 	pHTMLDoc->get_all(&ecAll);
-	if (!ecAll)
-	{
+	if (!ecAll)	
 		return false;
+	
+	CComBSTR bstrTag(szTag.c_str());
+	CComPtr<IDispatch> pTagDisp;
+	ecAll->tags(CComVariant(bstrTag), &pTagDisp);
+	CComQIPtr<IHTMLElementCollection> pTags(pTagDisp);
+
+	long iFormCount = 0;
+	pTags->get_length(&iFormCount);
+
+	for (long iIndex = 0; iIndex < iFormCount; iIndex++)
+	{
+		CComPtr<IDispatch> pItemDisp;
+		pTags->item(CComVariant(iIndex), CComVariant(0), &pItemDisp);
+
+		CComQIPtr<IHTMLElement> eTagLine(pItemDisp);
+		if (!eTagLine)
+			continue;
+
+		//是否所有属性都存在
+		bool bAllExist = true;
+		std::vector<std::string>::iterator aItor = attrs.begin();
+		for (; aItor != attrs.end(); ++aItor)		
+		{
+			std::string tmpAttr = *aItor;
+			CComBSTR bstrArrt(tmpAttr.c_str());
+			CComVariant tmpVar;
+			eTagLine->getAttribute(bstrArrt, 0, &tmpVar);
+
+			if (0 == tmpVar.bstrVal)
+			{
+				bAllExist = false;
+				break;
+			}
+			CComBSTR bstrVal(tmpVar.bstrVal);
+			if (0 == bstrVal.Length())
+			{
+				bAllExist = false;
+				break;
+			}
+		}
+		
+		if (bAllExist)
+		{
+			elemVec.push_back(eTagLine);
+		}
 	}
+
+	return true;
+}
+
+
+
+bool CIEAdapterMFC::querySubItems(CComQIPtr<IHTMLElement> elem, std::string szTag, std::vector<std::string> &attrs, std::vector<CComQIPtr<IHTMLElement>> &elemVec)
+{
+	if (!elem)
+		return false;
+
+	CComPtr<IDispatch> pAllDisp;
+	elem->get_all(&pAllDisp);
+
+	CComQIPtr<IHTMLElementCollection> ecAll(pAllDisp);
+	if (!ecAll)
+		return false;
 
 	CComBSTR bstrTag(szTag.c_str());
 	CComPtr<IDispatch> pTagDisp;
@@ -201,10 +259,6 @@ bool CIEAdapterMFC::queryItems(std::string szTag, std::vector<std::string> &attr
 			CComVariant tmpVar;
 			eTagLine->getAttribute(bstrArrt, 0, &tmpVar);
 
-			//调试
-			CComBSTR outHtml;
-			eTagLine->get_outerHTML(&outHtml);
-
 			if (0 == tmpVar.bstrVal)
 			{
 				bAllExist = false;
@@ -226,6 +280,7 @@ bool CIEAdapterMFC::queryItems(std::string szTag, std::vector<std::string> &attr
 
 	return true;
 }
+
 
 
 void CIEAdapterMFC::close()

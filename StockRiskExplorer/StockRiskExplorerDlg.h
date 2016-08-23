@@ -42,6 +42,10 @@ public:
 	CButton m_ShanghaiRadio;
 	CButton m_ShenzhenRadio;
 	CEdit m_outmsgEdit;
+	afx_msg void OnBnClickedButtonAnalyse();
+	CListBox m_ListKeyword;
+	afx_msg void OnBnClickedButtonCleantemp();
+	afx_msg void OnBnClickedButtonCleanwork();
 };
 
 

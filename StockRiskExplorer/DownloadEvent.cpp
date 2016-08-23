@@ -104,12 +104,20 @@ HRESULT CDownloadEvent::OnObjectAvailable(
 }
 
 
-void CDownloadEvent::waitForEnd()
+bool CDownloadEvent::waitForEnd(UINT tSec)
 {
+	bool bWait2End = (0 == tSec);
+
 	while(!m_downloadEnd)
 	{
+		if (!bWait2End && 0 == tSec--)
+		{
+			break;
+		}
+
 		::Sleep(1000);
 	}
+	return m_downloadEnd;
 }
 
 

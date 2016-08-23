@@ -58,7 +58,7 @@ public:
 
 public:
 
-	void waitForEnd();
+	bool waitForEnd(UINT tSec);
 
 
 private:

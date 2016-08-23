@@ -59,6 +59,8 @@ public:
 
 	bool queryItems(std::string szTag, std::vector<std::string> &attrs, std::vector<CComQIPtr<IHTMLElement>> &elemVec);
 
+	bool querySubItems(CComQIPtr<IHTMLElement> elem, std::string szTag, std::vector<std::string> &attrs, std::vector<CComQIPtr<IHTMLElement>> &elemVec);
+
 	void close();
 
 	void waitCompleted();
