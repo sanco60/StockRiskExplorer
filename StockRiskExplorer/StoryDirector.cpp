@@ -266,13 +266,6 @@ void CStoryDirector::processShangHai()
 		std::vector<CComQIPtr<IHTMLElement>>::iterator itor = vecPdfUrl.begin();
 		for (; itor != vecPdfUrl.end(); itor++)
 		{
-			//同样的pdf链接有两个，过滤其中没有说明的一个
-			BSTR itStr = NULL;
-			(*itor)->get_innerText(&itStr);
-			UINT uLength = ::SysStringLen(itStr);
-			if (6 > uLength)
-				continue;
-		
 			CComVariant cvVal;
 			(*itor)->getAttribute(CComBSTR("href"), 0, &cvVal);
 			CComBSTR bstrUrl(cvVal.bstrVal);
@@ -284,11 +277,20 @@ void CStoryDirector::processShangHai()
 			if (0 != csPdfSuffix.Compare(_T(".pdf")))
 				continue;
 
+			//同样的pdf链接有两个，过滤其中没有说明的一个
+			BSTR itBstr = NULL;
+			(*itor)->get_innerText(&itBstr);
+			CString csInnerText(itBstr);			
+			if (6 > csInnerText.GetLength())
+				continue;
+
 			memset(tcharMsg, 0, sizeof(tcharMsg));
 			_stprintf_s(tcharMsg, _T("下载 %s \r\n"), bstrUrl);
 			MSG_OUTPUT(tcharMsg);
 		
-			processPdfUrl(bstrUrl);
+			csInnerText.Remove(_T(':'));
+			csInnerText.Remove(_T('*'));
+			processPdfUrl(bstrUrl, csInnerText.Left(10));
 		}
 
 		//点击下一页
@@ -381,11 +383,17 @@ void CStoryDirector::processShenZhen()
 			if (0 != csPdfSuffix.Compare(_T(".pdf")))
 				continue;
 
+			BSTR itBstr = NULL;
+			(*itor)->get_innerText(&itBstr);
+			CString csInnerText(itBstr);			
+			csInnerText.Remove(_T(':'));
+			csInnerText.Remove(_T('*'));
+
 			memset(tcharMsg, 0, sizeof(tcharMsg));
 			_stprintf_s(tcharMsg, _T("下载 %s \r\n"), bstrUrl);
 			MSG_OUTPUT(tcharMsg);
 
-			processPdfUrl(bstrUrl);
+			processPdfUrl(bstrUrl, csInnerText.Left(4));
 		}
 
 		//先判断当前页是否为最后一页
@@ -447,7 +455,7 @@ void CStoryDirector::processShenZhen()
 }
 
 
-void CStoryDirector::processPdfUrl(CComBSTR &url)
+void CStoryDirector::processPdfUrl(CComBSTR &url, CString csNamePrefix)
 {
 	TCHAR tcharMsg[1024] = {0};
 	//CDownloadEvent dwnEvent;
@@ -455,12 +463,10 @@ void CStoryDirector::processPdfUrl(CComBSTR &url)
 	CComBSTR tTempPathName(s_TempDir.c_str());
 
 	getFileName(url, tFileName);
+	tTempPathName.Append(csNamePrefix.GetBuffer());
 	tTempPathName.Append(tFileName);
 
-	CComBSTR tTempTextPathName(tTempPathName);
-	HRESULT hr;
-
-	tTempTextPathName.Append(_T(".txt"));
+	HRESULT hr;	
 
 	hr = ::URLDownloadToFile(NULL, url, tTempPathName, 1024, NULL);
 	//等待下载完成
@@ -475,6 +481,9 @@ void CStoryDirector::processPdfUrl(CComBSTR &url)
 	//转换pdf文档成为text文档
 	SHELLEXECUTEINFO exeInfo;
 	memset(&exeInfo, 0, sizeof(exeInfo));
+
+	CComBSTR tTempTextPathName(tTempPathName);
+	tTempTextPathName.Append(_T(".txt"));
 
 	CComBSTR tParm(tTempPathName);
 	tParm.Append(_T(" "));
@@ -557,6 +566,7 @@ void CStoryDirector::analysing(CString & fNameKeyword)
 	if (fNameKeyword.IsEmpty())
 		return;
 
+	TCHAR tcharMsg[1024] = {0};
 	std::vector<CString> kwVec;
 
 	//读取中文必须设置语言
@@ -607,6 +617,10 @@ void CStoryDirector::analysing(CString & fNameKeyword)
 				break;
 		}
     }
+
+	memset(tcharMsg, 0, sizeof(tcharMsg));
+	_stprintf_s(tcharMsg, _T("分析完成 \r\n"));
+	MSG_OUTPUT(tcharMsg);
 	return;
 }
 

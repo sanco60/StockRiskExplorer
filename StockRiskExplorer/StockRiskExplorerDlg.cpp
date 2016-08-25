@@ -51,6 +51,7 @@ BEGIN_MESSAGE_MAP(CStockRiskExplorerDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_ANALYSE, &CStockRiskExplorerDlg::OnBnClickedButtonAnalyse)
 	ON_BN_CLICKED(IDC_BUTTON_CLEANTEMP, &CStockRiskExplorerDlg::OnBnClickedButtonCleantemp)
 	ON_BN_CLICKED(IDC_BUTTON_CLEANWORK, &CStockRiskExplorerDlg::OnBnClickedButtonCleanwork)
+	ON_BN_CLICKED(IDC_BUTTON_CLNMSG, &CStockRiskExplorerDlg::OnBnClickedButtonClnmsg)
 END_MESSAGE_MAP()
 
 
@@ -183,3 +184,10 @@ void CStockRiskExplorerDlg::OnBnClickedButtonCleanwork()
 	m_StoryDirector.cleanWorkDir();
 }
 
+
+
+void CStockRiskExplorerDlg::OnBnClickedButtonClnmsg()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	m_outmsgEdit.SetWindowTextW(_T(""));
+}

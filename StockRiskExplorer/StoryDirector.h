@@ -27,7 +27,7 @@ public:
 
 	void processShenZhen();
 
-	void processPdfUrl(CComBSTR &url);
+	void processPdfUrl(CComBSTR &url, CString csNamePrefix);
 
 	void getFileName(CComBSTR &url, CComBSTR &fname);
 
