@@ -47,6 +47,7 @@ public:
 	afx_msg void OnBnClickedButtonCleantemp();
 	afx_msg void OnBnClickedButtonCleanwork();
 	afx_msg void OnBnClickedButtonClnmsg();
+	afx_msg void OnBnClickedButtonConvt();
 };
 
 

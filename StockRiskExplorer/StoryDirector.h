@@ -39,6 +39,8 @@ public:
 
 	void analyseSingle(LPCTSTR fName, std::vector<CString>& kwVec);
 
+	void convertPdf();
+
 protected:
 	DECLARE_MESSAGE_MAP()
 

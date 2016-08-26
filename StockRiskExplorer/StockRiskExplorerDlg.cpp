@@ -28,6 +28,12 @@ CStockRiskExplorerDlg::CStockRiskExplorerDlg(CWnd* pParent /*=NULL*/)
 
 void CStockRiskExplorerDlg::showMsg(LPCTSTR lpszNewText)
 {
+	if (m_outmsgEdit.GetLineCount() > 200)
+	{
+		int nLength = m_outmsgEdit.SendMessage(WM_GETTEXTLENGTH);
+		m_outmsgEdit.SetSel(0, nLength/2);
+		m_outmsgEdit.ReplaceSel(_T(""));
+	}
 	m_outmsgEdit.SetSel(-1);
 	m_outmsgEdit.ReplaceSel(lpszNewText);
 }
@@ -52,6 +58,7 @@ BEGIN_MESSAGE_MAP(CStockRiskExplorerDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_CLEANTEMP, &CStockRiskExplorerDlg::OnBnClickedButtonCleantemp)
 	ON_BN_CLICKED(IDC_BUTTON_CLEANWORK, &CStockRiskExplorerDlg::OnBnClickedButtonCleanwork)
 	ON_BN_CLICKED(IDC_BUTTON_CLNMSG, &CStockRiskExplorerDlg::OnBnClickedButtonClnmsg)
+	ON_BN_CLICKED(IDC_BUTTON_CONVT, &CStockRiskExplorerDlg::OnBnClickedButtonConvt)
 END_MESSAGE_MAP()
 
 
@@ -190,4 +197,11 @@ void CStockRiskExplorerDlg::OnBnClickedButtonClnmsg()
 {
 	// TODO: 在此添加控件通知处理程序代码
 	m_outmsgEdit.SetWindowTextW(_T(""));
+}
+
+
+void CStockRiskExplorerDlg::OnBnClickedButtonConvt()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	m_StoryDirector.convertPdf();
 }

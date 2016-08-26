@@ -12,8 +12,9 @@
 #include "DownloadEvent.h"
 
 
-std::string s_TempDir(".\\StockRiskExplorerTemp\\");
-std::string s_WorkDir(".\\StockRiskExplorerWork\\");
+const TCHAR s_TempDir[] = _T(".\\StockRiskExplorerTemp\\");
+const TCHAR s_WorkDir[] = _T(".\\StockRiskExplorerWork\\");
+const TCHAR s_Pdf2TextExe[] = _T("E:\\ThirdLibs\\xpdfbin-win-3.04\\bin64\\pdftotext.exe");
 // CStoryDirector
 
 IMPLEMENT_DYNAMIC(CStoryDirector, CWnd)
@@ -45,8 +46,8 @@ bool CStoryDirector::init()
 	::CoInitialize(NULL);
 
 	//新建目录
-	::_mkdir(s_TempDir.c_str());
-	::_mkdir(s_WorkDir.c_str());
+	::CreateDirectory(s_TempDir, NULL);
+	::CreateDirectory(s_WorkDir, NULL);
 
 	//打开IE浏览器
 	SHELLEXECUTEINFO ieExeInfo;
@@ -449,7 +450,7 @@ void CStoryDirector::processShenZhen()
 	}
 
 	memset(tcharMsg, 0, sizeof(tcharMsg));
-	_stprintf_s(tcharMsg, _T("下载 转换 完毕\r\n"));
+	_stprintf_s(tcharMsg, _T("下载 完毕\r\n"));
 	MSG_OUTPUT(tcharMsg);
 	return;
 }
@@ -460,7 +461,7 @@ void CStoryDirector::processPdfUrl(CComBSTR &url, CString csNamePrefix)
 	TCHAR tcharMsg[1024] = {0};
 	//CDownloadEvent dwnEvent;
 	CComBSTR tFileName(1024);
-	CComBSTR tTempPathName(s_TempDir.c_str());
+	CComBSTR tTempPathName(s_TempDir);
 
 	getFileName(url, tFileName);
 	tTempPathName.Append(csNamePrefix.GetBuffer());
@@ -477,30 +478,7 @@ void CStoryDirector::processPdfUrl(CComBSTR &url, CString csNamePrefix)
 		MSG_OUTPUT(tcharMsg);
 		return;
 	}
-
-	//转换pdf文档成为text文档
-	SHELLEXECUTEINFO exeInfo;
-	memset(&exeInfo, 0, sizeof(exeInfo));
-
-	CComBSTR tTempTextPathName(tTempPathName);
-	tTempTextPathName.Append(_T(".txt"));
-
-	CComBSTR tParm(tTempPathName);
-	tParm.Append(_T(" "));
-	tParm.Append(tTempTextPathName);
-
-	exeInfo.cbSize = sizeof(exeInfo);
-	exeInfo.hwnd = NULL;
-	exeInfo.lpVerb = _T("open");
-	exeInfo.lpFile = _T("E:\\ThirdLibs\\xpdfbin-win-3.04\\bin64\\pdftotext.exe");
-	exeInfo.lpParameters = tParm;
-	exeInfo.nShow = SW_SHOWNORMAL;
-	exeInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
-
-	::ShellExecuteEx(&exeInfo);
-	//等待转换结束
-	::WaitForSingleObject(exeInfo.hProcess, INFINITE);
-
+		
 	return;
 }
 
@@ -512,7 +490,7 @@ void CStoryDirector::cleanTempDir()
 	memset(&delExeInfo, 0, sizeof(delExeInfo));
 
 	CComBSTR bstrParams(_T("/c del /q "));
-	bstrParams.Append(s_TempDir.c_str());
+	bstrParams.Append(s_TempDir);
 
 	delExeInfo.cbSize = sizeof(delExeInfo);
 	delExeInfo.hwnd = NULL;
@@ -540,7 +518,7 @@ void CStoryDirector::cleanWorkDir()
 	memset(&delExeInfo, 0, sizeof(delExeInfo));
 
 	CComBSTR bstrParams(_T("/c del /q "));
-	bstrParams.Append(s_WorkDir.c_str());
+	bstrParams.Append(s_WorkDir);
 
 	delExeInfo.cbSize = sizeof(delExeInfo);
 	delExeInfo.hwnd = NULL;
@@ -599,7 +577,7 @@ void CStoryDirector::analysing(CString & fNameKeyword)
 	free( old_locale );
 
 	//遍历临时目录下所有txt文本
-	CComBSTR bstrFind(s_TempDir.c_str());
+	CComBSTR bstrFind(s_TempDir);
 	bstrFind.Append(_T("*.txt"));
 
 	WIN32_FIND_DATA findFileData;
@@ -634,7 +612,7 @@ void CStoryDirector::analyseSingle(LPCTSTR fName, std::vector<CString>& kwVec)
 
 	TCHAR tcharMsg[1024] = {0};
 	bool bMatchedKeyword = false;
-	CComBSTR bstrPath(s_TempDir.c_str());
+	CComBSTR bstrPath(s_TempDir);
 
 	bstrPath.Append(fName);
 
@@ -645,7 +623,13 @@ void CStoryDirector::analyseSingle(LPCTSTR fName, std::vector<CString>& kwVec)
 	wifs.open(bstrPath);
 
 	if (!wifs.is_open())
+	{
+		memset(tcharMsg, 0, sizeof(tcharMsg));
+		_stprintf_s(tcharMsg, _T("打开文件:%s 失败\r\n"), bstrPath);
+		MSG_OUTPUT(tcharMsg);
 		return;
+	}
+		
 
 	wifs.imbue(std::locale(wifs.getloc(), new std::codecvt_utf8<wchar_t, 0x10ffff, std::consume_header>()));
 
@@ -665,7 +649,7 @@ void CStoryDirector::analyseSingle(LPCTSTR fName, std::vector<CString>& kwVec)
 			if (_T(' ') == wCurChar || _T('\t') == wCurChar)
 				continue;
 
-			for (int iVec = 0; iVec < sizeVec; iVec++)
+			for (UINT iVec = 0; iVec < sizeVec; iVec++)
 			{
 				TCHAR kChar = kwVec[iVec].GetAt(indexVec[iVec]);
 				if (kChar != wCurChar)
@@ -679,7 +663,7 @@ void CStoryDirector::analyseSingle(LPCTSTR fName, std::vector<CString>& kwVec)
 					bMatchedKeyword = true;
 
 					memset(tcharMsg, 0, sizeof(tcharMsg));
-					_stprintf_s(tcharMsg, _T("文件%s 匹配到 %s\r\n"), fName, kwVec[iVec].GetBuffer());
+					_stprintf_s(tcharMsg, _T("文件:%s 匹配到 %s\r\n"), fName, kwVec[iVec].GetBuffer());
 					MSG_OUTPUT(tcharMsg);
 					break;
 				}
@@ -697,7 +681,10 @@ void CStoryDirector::analyseSingle(LPCTSTR fName, std::vector<CString>& kwVec)
 
 	//如果文件包含关键词则将文件的pdf版本拷贝到工作目录
 	CString csPath(bstrPath);
-	CString csPdfPath = csPath.Left(csPath.GetLength() - 4);
+	CString csPdfPath;
+	csPdfPath.Append(_T("\""));
+	csPdfPath.Append(csPath.Left(csPath.GetLength() - 4));
+	csPdfPath.Append(_T("\""));
 	
 	SHELLEXECUTEINFO cpExeInfo;
 	memset(&cpExeInfo, 0, sizeof(cpExeInfo));
@@ -705,7 +692,7 @@ void CStoryDirector::analyseSingle(LPCTSTR fName, std::vector<CString>& kwVec)
 	CComBSTR bstrParams(_T("/c copy /Y "));
 	bstrParams.Append(csPdfPath.GetBuffer());
 	bstrParams.Append(_T(' '));
-	bstrParams.Append(s_WorkDir.c_str());
+	bstrParams.Append(s_WorkDir);
 
 	cpExeInfo.cbSize = sizeof(cpExeInfo);
 	cpExeInfo.hwnd = NULL;
@@ -721,4 +708,67 @@ void CStoryDirector::analyseSingle(LPCTSTR fName, std::vector<CString>& kwVec)
 	return;
 }
 
+
+void CStoryDirector::convertPdf()
+{
+	TCHAR tcharMsg[1024] = {0};
+
+	//遍历临时目录下所有pdf文本
+	CComBSTR bstrFind(s_TempDir);
+	bstrFind.Append(_T("*.pdf"));
+
+	WIN32_FIND_DATA findFileData;
+
+	HANDLE hFind = ::FindFirstFile(bstrFind, &findFileData);
+
+    if (INVALID_HANDLE_VALUE != hFind)
+    {		
+		while(TRUE)
+		{
+			//转换pdf文档成为text文档
+			SHELLEXECUTEINFO exeInfo;
+			memset(&exeInfo, 0, sizeof(exeInfo));
+
+			CComBSTR tTempPdfPath;
+			tTempPdfPath.Append(_T("\""));
+			tTempPdfPath.Append(s_TempDir);
+			tTempPdfPath.Append(findFileData.cFileName);
+			tTempPdfPath.Append(_T("\""));
+			
+			CComBSTR tTempTextPath;
+			tTempTextPath.Append(_T("\""));
+			tTempTextPath.Append(s_TempDir);
+			tTempTextPath.Append(findFileData.cFileName);
+			tTempTextPath.Append(_T(".txt"));
+			tTempTextPath.Append(_T("\""));
+
+			CComBSTR tParm(tTempPdfPath);
+			tParm.Append(_T(" "));
+			tParm.Append(tTempTextPath);
+
+			exeInfo.cbSize = sizeof(exeInfo);
+			exeInfo.hwnd = NULL;
+			exeInfo.lpVerb = _T("open");
+			exeInfo.lpFile = s_Pdf2TextExe;
+			exeInfo.lpParameters = tParm;
+			exeInfo.nShow = SW_SHOWNORMAL;
+			exeInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
+
+			::ShellExecuteEx(&exeInfo);
+			//等待转换结束
+			::WaitForSingleObject(exeInfo.hProcess, INFINITE);
+
+			BOOL bRetNext = FALSE;
+			bRetNext = ::FindNextFile(hFind, &findFileData);
+			if (!bRetNext)
+				break;
+		}
+    }
+
+	memset(tcharMsg, 0, sizeof(tcharMsg));
+	_stprintf_s(tcharMsg, _T("转换完成 \r\n"));
+	MSG_OUTPUT(tcharMsg);
+
+	return;
+}
 
