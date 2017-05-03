@@ -88,6 +88,7 @@ bool CStoryDirector::init()
 			if (!bRetNext)
 				break;
 		}
+		::FindClose(hFind);
     }
 
 	m_bInitialized = true;
@@ -594,6 +595,7 @@ void CStoryDirector::analysing(CString & fNameKeyword)
 			if (!bRetNext)
 				break;
 		}
+		::FindClose(hFind);
     }
 
 	memset(tcharMsg, 0, sizeof(tcharMsg));
@@ -763,6 +765,7 @@ void CStoryDirector::convertPdf()
 			if (!bRetNext)
 				break;
 		}
+		::FindClose(hFind);
     }
 
 	memset(tcharMsg, 0, sizeof(tcharMsg));
